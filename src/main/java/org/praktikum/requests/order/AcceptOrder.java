@@ -1,11 +1,9 @@
 package org.praktikum.requests.order;
 
-import io.restassured.response.Response;
+import io.qameta.allure.Step;
+import io.restassured.response.ValidatableResponse;
 import org.praktikum.requests.constants.RequestUrls;
-import org.praktikum.requests.courier.Courier;
 import org.praktikum.requests.courier.CreateCourier;
-
-import static io.restassured.RestAssured.given;
 
 public class AcceptOrder extends RequestUrls {
     CreateOrder order;
@@ -15,11 +13,8 @@ public class AcceptOrder extends RequestUrls {
         this.order = order;
         this.courier = courier;
     }
-
-    public Response acceptOrder(String track, String id) {
-        return given()
-                .header("Content-type", "application/json")
-                .queryParam("courierId", id)
-                .put(getACCEPT_ORDER() + track);
+    @Step("Принятие заказа")
+    public ValidatableResponse acceptOrder(String track, String id) {
+        return doPutRequestWithQuery(getACCEPT_ORDER(), "courierId", id);
     }
 }

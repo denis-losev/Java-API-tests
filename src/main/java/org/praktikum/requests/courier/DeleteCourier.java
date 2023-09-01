@@ -1,9 +1,8 @@
 package org.praktikum.requests.courier;
 
-import io.restassured.response.Response;
+import io.qameta.allure.Step;
+import io.restassured.response.ValidatableResponse;
 import org.praktikum.requests.constants.RequestUrls;
-
-import static io.restassured.RestAssured.given;
 
 public class DeleteCourier extends RequestUrls {
     Courier courier;
@@ -11,10 +10,9 @@ public class DeleteCourier extends RequestUrls {
     public DeleteCourier(Courier courier) {
         this.courier = courier;
     }
-    public Response deleteCourier(String id) {
-        return given()
-                .header("Content-type", "application/json")
-                .delete(getDELETE_COURIER() + id);
+    @Step("Удаление курьера")
+    public ValidatableResponse deleteCourier(String id) {
+        return doDeleteRequest(getCOURIER_URL() + "/" + id);
     }
 
 }

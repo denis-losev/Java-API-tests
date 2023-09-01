@@ -1,10 +1,8 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.praktikum.requests.constants.RequestUrls;
 import org.praktikum.requests.courier.Courier;
 import org.praktikum.requests.courier.CreateCourier;
 import org.praktikum.requests.courier.DeleteCourier;
@@ -15,8 +13,8 @@ import org.praktikum.requests.order.Order;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class AcceptOrderTest extends RequestUrls {
-    private String login = "Login666Courier1";
+public class AcceptOrderTest {
+    private String login = "LoginCourier1999";
     private String password = "p@s5w0rd";
     private String firstName = "Courier";
     Order order = new Order("Денис", "Лосев", "Ленина 10", "4", "+79777777777", 3, "2023-08-30T21:00:00.000Z", "Комментарий", new String[]{"GREY"});
@@ -28,7 +26,6 @@ public class AcceptOrderTest extends RequestUrls {
     AcceptOrder acceptOrder = new AcceptOrder(createdOrder, createdCourier);
     @Before
     public void setUp(){
-        RestAssured.baseURI = getURL();
         createdCourier.createCourier();
         createdOrder.createOrder();
     }
@@ -38,12 +35,9 @@ public class AcceptOrderTest extends RequestUrls {
     @Description("Успешный запрос возвращает ok: true")
     public void acceptOrderTest() {
         acceptOrder.acceptOrder(createdOrder.getOrderId(), loginCourier.getCouriersId())
-                .then()
-                .assertThat().body("ok", equalTo(true))
+                .assertThat().statusCode(200)
                 .and()
-                .statusCode(200)
-                .log().status()
-                .log().body();
+                .body("ok", equalTo(true));
     }
 
     @Test
@@ -51,12 +45,9 @@ public class AcceptOrderTest extends RequestUrls {
     @Description("Если не передать id курьера, запрос вернёт ошибку")
     public void acceptOrderNoCourierIdTest() {
         acceptOrder.acceptOrder(createdOrder.getOrderId(), "")
-                .then()
-                .assertThat().body("message", equalTo("Недостаточно данных для поиска"))
+                .assertThat().statusCode(400)
                 .and()
-                .statusCode(400)
-                .log().status()
-                .log().body();
+                .body("message", equalTo("Недостаточно данных для поиска"));
     }
 
     @Test
@@ -64,12 +55,9 @@ public class AcceptOrderTest extends RequestUrls {
     @Description("Если передать неверный id курьера, запрос вернёт ошибку")
     public void acceptOrderWithNonExistentCourierIdTest() {
         acceptOrder.acceptOrder(createdOrder.getOrderId(), "869098543")
-                .then()
-                .assertThat().body("message", equalTo("Курьера с таким id не существует"))
+                .assertThat().statusCode(404)
                 .and()
-                .statusCode(404)
-                .log().status()
-                .log().body();
+                .body("message", equalTo("Курьера с таким id не существует"));
     }
 
     @Test
@@ -77,12 +65,9 @@ public class AcceptOrderTest extends RequestUrls {
     @Description("Если не передать номер заказа, запрос вернёт ошибку")
     public void acceptOrderNoOrderIdTest() {
         acceptOrder.acceptOrder("", loginCourier.getCouriersId())
-                .then()
-                .assertThat().body("message", equalTo("Недостаточно данных для поиска"))
+                .assertThat().statusCode(400)
                 .and()
-                .statusCode(400)
-                .log().status()
-                .log().body();
+                .body("message", equalTo("Недостаточно данных для поиска"));
     }
 
     @Test
@@ -90,12 +75,9 @@ public class AcceptOrderTest extends RequestUrls {
     @Description("Если не передать неверный номер заказа, запрос вернёт ошибку")
     public void acceptOrderWithNonExistentOrderIdTest() {
         acceptOrder.acceptOrder("199189218", loginCourier.getCouriersId())
-                .then()
-                .assertThat().body("message", equalTo("Заказа с таким id не существует"))
+                .assertThat().statusCode(404)
                 .and()
-                .statusCode(404)
-                .log().status()
-                .log().body();
+                .body("message", equalTo("Заказа с таким id не существует"));
     }
 
     @After

@@ -1,18 +1,15 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.praktikum.requests.courier.Courier;
 import org.praktikum.requests.courier.CreateCourier;
-import org.praktikum.requests.constants.RequestUrls;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
 @RunWith(Parameterized.class)
-public class EmptyFieldsCreateCourierTest extends RequestUrls {
+public class EmptyFieldsCreateCourierTest {
     private String login, password, firstName;
 
     public EmptyFieldsCreateCourierTest(String login, String password, String firstName) {
@@ -20,16 +17,12 @@ public class EmptyFieldsCreateCourierTest extends RequestUrls {
         this.password = password;
         this.firstName = firstName;
     }
-    @Before
-    public void setUp(){
-        RestAssured.baseURI = getURL();
-    }
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "Login: {0}, Password: {1}, First name: {2}")
     public static Object[][] enterParameters() {
         return new Object[][]{
                 {"", "P@s5w0rd", "Courier"},
-                {"Courie0r1", "", "Couriers"},
-                {"Couri5e8r07", "P@s5w0rd", ""}
+                {"Courr1", "", "Couriers"},
+                {"Couri07", "P@s5w0rd", ""}
         };
     }
 
@@ -40,11 +33,8 @@ public class EmptyFieldsCreateCourierTest extends RequestUrls {
         Courier courier = new Courier(login, password, firstName);
         CreateCourier createdCourier = new CreateCourier(courier);
         createdCourier.createCourier()
-                .then()
-                .assertThat().body("message", equalTo("Недостаточно данных для создания учетной записи"))
+                .assertThat().statusCode(400)
                 .and()
-                .statusCode(400)
-                .log().status()
-                .log().body();
+                .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 }

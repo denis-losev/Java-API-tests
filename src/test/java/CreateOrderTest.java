@@ -1,18 +1,15 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.praktikum.requests.constants.RequestUrls;
 import org.praktikum.requests.order.CreateOrder;
 import org.praktikum.requests.order.Order;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 @RunWith(Parameterized.class)
-public class CreateOrderTest extends RequestUrls {
+public class CreateOrderTest {
     private String firstName, lastName, address, metroStation, phone, deliveryDate, comment;
     private int rentTime;
     private String[] color;
@@ -28,12 +25,7 @@ public class CreateOrderTest extends RequestUrls {
         this.color = color;
     }
 
-    @Before
-    public void setUp(){
-        RestAssured.baseURI = getURL();
-    }
-
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "Имя: {0}, Фамилия: {1}, Адресс: {2}, Название станции метро: {3}, Телефон: {4}, Время аренды: {5}, Дата доставки: {6}, Комментарий: {7}, Цвет: {8}")
     public static Object[][] enterParameters() {
         return new Object[][] {
                 {"Денис", "Лосев", "Ленина 10", "2", "+79777777777", 1, "2023-08-30T21:00:00.000Z", "Комментарий", new String[]{"BLACK", "GREY"}},
@@ -53,11 +45,8 @@ public class CreateOrderTest extends RequestUrls {
         Order order = new Order(firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);
         CreateOrder createOrder = new CreateOrder(order);
         createOrder.createOrder()
-                .then()
-                .assertThat().body("track", notNullValue())
+                .assertThat().statusCode(201)
                 .and()
-                .statusCode(201)
-                .log().status()
-                .log().body();
+                .body("track", notNullValue());
     }
 }

@@ -1,9 +1,8 @@
 package org.praktikum.requests.order;
 
-import io.restassured.response.Response;
+import io.qameta.allure.Step;
+import io.restassured.response.ValidatableResponse;
 import org.praktikum.requests.constants.RequestUrls;
-
-import static io.restassured.RestAssured.given;
 
 public class GetOrder extends RequestUrls {
     Order order;
@@ -11,11 +10,8 @@ public class GetOrder extends RequestUrls {
     public GetOrder(Order order) {
         this.order = order;
     }
-
-    public Response getOrderById(String id) {
-        return given()
-                .header("Content-type", "application/json")
-                .queryParam("t", id)
-                .get(getGET_ORDER());
+    @Step("Получение заказа по ID")
+    public ValidatableResponse getOrderById(String id) {
+        return doGetRequestWithQuery(getGET_ORDER(), "t", id);
     }
 }

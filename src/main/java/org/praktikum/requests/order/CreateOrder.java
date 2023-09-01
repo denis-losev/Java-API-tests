@@ -1,25 +1,20 @@
 package org.praktikum.requests.order;
 
-import io.restassured.response.Response;
+import io.qameta.allure.Step;
+import io.restassured.response.ValidatableResponse;
 import org.praktikum.requests.constants.RequestUrls;
-
-import static io.restassured.RestAssured.given;
 
 public class CreateOrder extends RequestUrls {
     Order order;
     public CreateOrder(Order order) {
         this.order = order;
     }
-    public Response createOrder() {
-        return given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(order)
-                .when()
-                .post(getCREATE_ORDER());
+    @Step("Создание заказа")
+    public ValidatableResponse createOrder() {
+        return doPostRequest(getORDERS_URL(), order);
     }
-
+    @Step("Получение ID заказа")
     public String getOrderId() {
-        return createOrder().body().as(OrderId.class).getTrack();
+        return createOrder().extract().body().as(OrderId.class).getTrack();
     }
 }

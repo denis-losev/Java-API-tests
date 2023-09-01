@@ -1,18 +1,15 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.praktikum.requests.courier.Courier;
 import org.praktikum.requests.courier.LoginCourier;
-import org.praktikum.requests.constants.RequestUrls;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
 @RunWith(Parameterized.class)
-public class EmptyFieldsLoginCourierTest extends RequestUrls {
+public class EmptyFieldsLoginCourierTest {
     private String login, password;
 
     public EmptyFieldsLoginCourierTest(String login, String password) {
@@ -20,16 +17,11 @@ public class EmptyFieldsLoginCourierTest extends RequestUrls {
         this.password = password;
     }
 
-    @Before
-    public void setUp(){
-        RestAssured.baseURI = getURL();
-    }
-
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "Login: {0}, Password: {1}")
     public static Object[][] enterParameters() {
         return new Object[][]{
                 {"", "P@s5w0rd"},
-                {"Courier001", ""},
+                {"Courjhkb001", ""},
         };
     }
 
@@ -40,11 +32,8 @@ public class EmptyFieldsLoginCourierTest extends RequestUrls {
         Courier courier = new Courier(login, password);
         LoginCourier loginCourier = new LoginCourier(courier);
         loginCourier.loginCourier()
-                .then()
-                .assertThat().body("message", equalTo("Недостаточно данных для входа"))
+                .assertThat().statusCode(400)
                 .and()
-                .statusCode(400)
-                .log().status()
-                .log().body();
+                .body("message", equalTo("Недостаточно данных для входа"));
     }
 }
